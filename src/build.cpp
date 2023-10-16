@@ -44,59 +44,69 @@ void Builder::addFiles(const char **files, int size) {
     this->files.push_back(files[i]);
 }
 
+void Builder::addArgument(const std::string &arg) {
+  this->arguments.push_back(arg);
+}
+void Builder::addArgument(const char *arg) { this->arguments.push_back(arg); }
+
+std::string Builder::argumentsToCommand() {
+  std::string command = "";
+  for (auto &arg : arguments)
+    command += arg + " ";
+  return command;
+}
+
+void Builder::clearArguments() { arguments.clear(); }
+
 void Builder::Compile() {
-  std::string command;
   std::string currPath = std::filesystem::current_path().string();
 
   if (compiler == GCC) {
-
     switch (architecture) {
     case x86_64:
       if (system == Linux)
-        command = "x86_64-linux-gnu-gcc -m64";
+        addArgument("x86_64-linux-gnu-gcc -m64");
       if (system == Windows)
-        command = "x86_64-w64-mingw32-gcc";
+        addArgument("x86_64-w64-mingw32-gcc");
       break;
     case x86:
       if (system == Linux)
-        command = "x86_64-linux-gnu-gcc -m32";
+        addArgument("x86_64-linux-gnu-gcc -m32");
       if (system == Windows)
-        command = "i686-w64-mingw32-gcc";
+        addArgument("i686-w64-mingw32-gcc");
       break;
     default:
       break;
     }
   }
-  std::cout << command << std::endl;
 
-  if (outputFile.size() != 0) {
-    command += " -o " + currPath + "/" + outputFile;
-  }
+  if (outputFile.size() != 0)
+    addArgument(" -o " + currPath + "/" + outputFile);
 
   switch (optimizationLevel) {
   case O0:
-    command += " -O0";
+    addArgument(" -O0");
     break;
   case O1:
-    command += " -O1";
+    addArgument(" -O1");
     break;
   case O2:
-    command += " -O2";
+    addArgument(" -O2");
     break;
   case O3:
-    command += " -O3";
+    addArgument(" -O3");
     break;
   case Ofast:
-    command += " -Ofast";
+    addArgument(" -Ofast");
     break;
   case Og:
-    command += " -Og";
+    addArgument(" -Og");
     break;
   case Oz:
-    command += " -Oz";
+    addArgument(" -Oz");
     break;
   case Os:
-    command += " -Os";
+    addArgument(" -Os");
     break;
   case None:
   default:
@@ -106,8 +116,9 @@ void Builder::Compile() {
   if (files.empty())
     exit(1);
   for (auto &file : files)
-    command += " " + currPath + "/" + file;
+    addArgument(" " + currPath + "/" + file);
 
+  std::string command = argumentsToCommand();
   std::cout << command << std::endl;
   sys(command.c_str());
 }

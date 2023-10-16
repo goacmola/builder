@@ -13,6 +13,8 @@ int main() {
   builder.setOptimizationLevel(O2);
   builder.Compile();
 
+  builder.clearArguments();
+
   builder.setOutputFile("build/windows/main.exe");
   builder.setSystem(Windows);
   builder.Compile();

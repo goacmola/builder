@@ -36,9 +36,9 @@ private:
   std::vector<std::string> files;
   std::string outputFile;
 
-  std::vector<std::array<std::string, 2>> arguments;
+  std::vector<std::string> arguments;
 
-  std::string &argumentsToCommand();
+  std::string argumentsToCommand();
 
 public:
   Builder(Compilers compiler = GCC, Systems system = Linux,
@@ -52,12 +52,19 @@ public:
   void setWarningLevel(WarningLevel warningLevel);
 
   void addFile(const std::string &dir);
-  void addFiles(const std::vector<std::string> &files);
-  void setOutputFile(const std::string &dir);
   void addFile(const char *dir);
+
+  void addFiles(const std::vector<std::string> &files);
   void addFiles(const std::vector<char *> files);
-  void setOutputFile(const char *dir);
   void addFiles(const char **files, int size);
+
+  void setOutputFile(const std::string &dir);
+  void setOutputFile(const char *dir);
+
+  void addArgument(const std::string &arg);
+  void addArgument(const char *arg);
+
+  void clearArguments();
 
   void Compile();
 };
